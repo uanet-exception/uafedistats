@@ -13,7 +13,6 @@ SERVERS=(
 
 TOTAL_USERS=0;
 LOCAL_POSTS=0;
-ACTIVE_HALFYEAR=0;
 for SERVER in ${SERVERS[@]}; do
     NODEINFO_URL=$(curl -s -f --retry-delay 2 --retry 5 "https://$SERVER/.well-known/nodeinfo" | jq -r .links[-1].href);
     test -n "$NODEINFO_URL" || {
@@ -31,7 +30,7 @@ done
 
 echo "$(date +%s),$TOTAL_USERS,${#SERVERS[@]},$LOCAL_POSTS" >> "$DIR/workspace/mastostats.csv";
 
-# uncomment if you would like to keep stats only for the last 1 year
+# uncomment if you would like to keep fixed size stats
 # TMP=$(mktemp);
 # cp "$DIR/workspace/mastostats.csv" "$TMP";
 # tail -n 52 "$TMP" > "$DIR/workspace/mastostats.csv";

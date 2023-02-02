@@ -28,42 +28,42 @@ set datafile separator ","
 set xrange [start_time:]
 
 # Plot 'usercount' of the past week and get bounds (for GRAPH 1 y1)
-plot "mastostats.csv" using 1:2
+plot "workspace/mastostats.csv" using 1:2
 #usercountlow = 0
 usercountlow = GPVAL_DATA_Y_MIN - (GPVAL_DATA_Y_MAX - GPVAL_DATA_Y_MIN)
 usercounthigh = GPVAL_DATA_Y_MAX
 
 f(x) = uc_mean
-fit f(x) "mastostats.csv" using ($1):(d($2)) via uc_mean
+fit f(x) "workspace/mastostats.csv" using ($1):(d($2)) via uc_mean
 uc_extreme = uc_mean * 50
 
-plot "mastostats.csv" using ($1):(d($2))
+plot "workspace/mastostats.csv" using ($1):(d($2))
 print "Usercount mean            : ",uc_mean
 print "Usercount extreme         : ",uc_extreme
 print "Usercount max wo smooth   : ",GPVAL_DATA_Y_MAX
 
 # Plot derivative of 'usercount' of the past week and get bounds (for GRAPH 1 y2)
-plot "mastostats.csv" using ($1):(d_smooth($2, uc_extreme))
+plot "workspace/mastostats.csv" using ($1):(d_smooth($2, uc_extreme))
 uc_derivative_low = GPVAL_DATA_Y_MIN
 uc_derivative_high = GPVAL_DATA_Y_MAX
 print "Usercount max with smooth : ",GPVAL_DATA_Y_MAX
 
 # Plot derivative of 'instancecount' of the past week and get bounds (for GRAPH 2 y1)
-plot "mastostats.csv" using 1:3
+plot "workspace/mastostats.csv" using 1:3
 instanceslow  = GPVAL_DATA_Y_MIN
 instanceshigh = GPVAL_DATA_Y_MAX
 
 f(x) = tc_mean
-fit f(x) "mastostats.csv" using ($1):(d($4)) via tc_mean
+fit f(x) "workspace/mastostats.csv" using ($1):(d($4)) via tc_mean
 tc_extreme = tc_mean * 50
 
-plot "mastostats.csv" using ($1):(d($4))
+plot "workspace/mastostats.csv" using ($1):(d($4))
 print "Tootscount mean           : ",tc_mean
 print "Tootscount extreme        : ",tc_extreme
 print "Tootscount max wo smooth  : ",GPVAL_DATA_Y_MAX
 
 # Plot derivative of 'usercount' of the past week and get bounds (for GRAPH 1 y2)
-plot "mastostats.csv" using ($1):(d_smooth($4, tc_extreme))
+plot "workspace/mastostats.csv" using ($1):(d_smooth($4, tc_extreme))
 tc_derivative_low = GPVAL_DATA_Y_MIN
 tc_derivative_high = GPVAL_DATA_Y_MAX
 print "Tootscount max with smooth: ",GPVAL_DATA_Y_MAX
@@ -74,7 +74,7 @@ print "Tootscount max with smooth: ",GPVAL_DATA_Y_MAX
 
 # Set up our fonts and such
 set terminal png truecolor size 1464,660 enhanced font "branding/LiberationSans-Regular.ttf" 16 background rgb "#282d37"
-set output 'graph.png'
+set output 'workspace/graph.png'
 
 # Set border colour and line width
 set border lw 3 lc rgb "white"
@@ -152,7 +152,7 @@ set style line 12 lc rgb "#FEFEFE" lt 1 lw 5
 set grid
 
 # Plot the graph
-plot "mastostats.csv" every ::1 using 1:2 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#2e85ad", \
+plot "workspace/mastostats.csv" every ::1 using 1:2 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#2e85ad", \
         '' u ($1):(d_smooth($2, uc_extreme)) w filledcurves x1 title '' axes x1y2 fs transparent solid 0.5 noborder lc rgb "#7ae9d8"
 
 
@@ -189,7 +189,7 @@ set style line 12 lc rgb "#FEFEFE" lt 1 lw 5
 set grid
 
 # Plot the graph
-plot "mastostats.csv" every ::1 using 1:3 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#E9967A", \
+plot "workspace/mastostats.csv" every ::1 using 1:3 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#E9967A", \
         '' u ($1):(d_smooth($4, tc_extreme)/1e3) w filledcurves x1 title '' axes x1y2 fs transparent solid 0.5 noborder lc rgb "#EEE8AA"
 
 

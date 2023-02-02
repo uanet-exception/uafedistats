@@ -9,4 +9,4 @@ which gnuplot &> /dev/null || {
     exit 1;
 };
 
-cd "$DIR/workspace/" && gnuplot generate.gnuplot;
+cd "$DIR" && gnuplot generate.gnuplot;

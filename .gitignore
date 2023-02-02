@@ -1,3 +1,4 @@
 workspace/*.csv
 workspace/*.png
+workspace/*.log
 *.log

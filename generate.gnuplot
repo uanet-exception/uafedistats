@@ -75,7 +75,7 @@ print "Tootscount max with smooth: ",GPVAL_DATA_Y_MAX
 ###############################################################################
 
 # Set up our fonts and such
-set terminal png truecolor size 1464,660 enhanced font "branding/LiberationSans-Regular.ttf" 16 background rgb "#282d37"
+set terminal png truecolor size 1464,660 enhanced font "branding/e-Ukraine-Thin.otf" 16 background rgb "#282d37"
 set output 'workspace/graph.png'
 
 # Set border colour and line width
@@ -126,18 +126,19 @@ set rmargin rmarg
 
 # Set Y axis
 set yrange [usercountlow:usercounthigh]
-set ylabel "Number of users" textcolor rgb "#93ddff" offset 2,0,0
-set decimalsign locale 'C.UTF-8'
+set ylabel "Кількість користувачів" textcolor rgb "#93ddff" offset 2,0,0
+set decimalsign locale 'uk_UA.UTF-8'
 set format y "%'.0f"
 
 # Set Y2 axis
 set y2range [0:uc_derivative_high * 1.2]
-set y2label 'Hourly increase' textcolor rgb "#7ae9d8"
+set y2label 'Приріст в годину' textcolor rgb "#7ae9d8"
 set y2tics textcolor rgb "white"
 set format y2 "%'.0f"
 
 # Set X axis
 set xdata time
+set locale 'uk_UA.UTF-8'
 set xrange [start_time:]
 set timefmt "%s"
 set xlabel ""
@@ -172,11 +173,11 @@ set rmargin rmarg
 
 # Set Y axis
 set yrange [instanceslow-(instanceshigh-instanceslow):instanceshigh]
-set ylabel "Active instances" textcolor rgb "#E9967A" offset 1,0,0
+set ylabel "Активних інстансів" textcolor rgb "#E9967A" offset 1,0,0
 
 # Set Y2 axis
 set y2range [0:tc_derivative_high * 1.2/1e3]
-set y2label 'Thousand toots per hour' textcolor rgb "#EEE8AA"
+set y2label 'Тисяча постів за годину' textcolor rgb "#EEE8AA"
 set format y2 "%'.0f"
 
 # Set X axis

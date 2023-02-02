@@ -2,6 +2,11 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 
+which curl &> /dev/null || {
+    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Unresolved dependencies: curl" 1>&2;
+    exit 1;
+};
+
 SERVERS=(
     $(curl -s -f --retry 5 https://relay.social.net.ua/nodeinfo/2.1.json | jq -r .metadata.peers[])
 );
@@ -24,10 +29,11 @@ for SERVER in ${SERVERS[@]}; do
     let LOCAL_POSTS+=$(echo $NODEINFO | jq -r '.usage.localPosts // 0');
 done
 
-echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] Total: $TOTAL_USERS, localPosts: $LOCAL_POSTS";
-
 echo "$(date +%s),$TOTAL_USERS,${#SERVERS[@]},$LOCAL_POSTS" >> "$DIR/workspace/mastostats.csv";
 
-cd "$DIR/workspace/" && gnuplot generate.gnuplot;
+# uncomment if you would like to keep stats only for the last 1 year
+# TMP=$(mktemp);
+# cp "$DIR/workspace/mastostats.csv" "$TMP";
+# tail -n 52 "$TMP" > "$DIR/workspace/mastostats.csv";
 
 exit 0;

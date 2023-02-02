@@ -1,3 +1,5 @@
+#!/usr/bin/env gnuplot
+
 # We need this to make the script work on some versions of gnuplot
 set term dumb
 set fit quiet

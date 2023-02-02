@@ -1,2 +1,3 @@
 workspace/*.csv
 workspace/*.png
+*.log

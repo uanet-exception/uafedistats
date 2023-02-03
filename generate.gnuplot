@@ -75,7 +75,7 @@ print "Tootscount max with smooth: ",GPVAL_DATA_Y_MAX
 ###############################################################################
 
 # Set up our fonts and such
-set terminal png truecolor size 1464,660 enhanced font "branding/e-Ukraine-Thin.otf" 16 background rgb "#282d37"
+set terminal png truecolor size 1464,660 enhanced font "branding/AvantGardeC.otf" 16 background rgb "#282d37"
 set output 'workspace/graph.png'
 
 # Set border colour and line width

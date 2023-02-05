@@ -54,6 +54,10 @@ print "Usercount max with smooth : ",GPVAL_DATA_Y_MAX
 plot "workspace/mastostats.csv" using 1:3
 instanceslow  = GPVAL_DATA_Y_MIN
 instanceshigh = GPVAL_DATA_Y_MAX
+if (instanceshigh == instanceslow) {
+    # Normalize Y axes if the data for graph #2 is constant
+    instanceshigh = instanceshigh + 10
+}
 
 f(x) = tc_mean
 fit f(x) "workspace/mastostats.csv" using ($1):(d($4)) via tc_mean

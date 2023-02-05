@@ -8,18 +8,18 @@ which curl &> /dev/null || {
 };
 
 SERVERS=(
-    $(curl -s -f --retry 5 https://relay.social.net.ua/nodeinfo/2.1.json | jq -r .metadata.peers[])
+    $(curl -s -f --retry 5 --connect-timeout 8 -m 10 https://relay.social.net.ua/nodeinfo/2.1.json | jq -r .metadata.peers[])
 );
 
 TOTAL_USERS=0;
 LOCAL_POSTS=0;
 for SERVER in ${SERVERS[@]}; do
-    NODEINFO_URL=$(curl -s -f --retry-delay 2 --retry 5 "https://$SERVER/.well-known/nodeinfo" | jq -r .links[-1].href);
+    NODEINFO_URL=$(curl -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 "https://$SERVER/.well-known/nodeinfo" | jq -r .links[-1].href);
     test -n "$NODEINFO_URL" || {
         echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Can't get nodeinfo url from $SERVER" 1>&2;
         continue;
     };
-    NODEINFO=$(curl -s -f --retry-delay 2 --retry 5 "$NODEINFO_URL");
+    NODEINFO=$(curl -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 "$NODEINFO_URL");
     test -n "$NODEINFO" || {
         echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Can't get nodeinfo from $SERVER" 1>&2;
         continue;

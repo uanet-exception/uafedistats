@@ -82,8 +82,10 @@ function post() {
     ONE_DAY_AGO=$(date -d "1 day ago" +%s);
     ONE_WEEK_AGO=$(date -d "1 week ago" +%s);
 
-    LAST_HOUR_USERS=0; LAST_DAY_USERS=0; LAST_WEEK_USERS=0;
-    MAX_USERS=0; MAX_SERVERS=0; MAX_POSTS=0;
+    LAST_HOUR_USERS=0;
+    LAST_DAY_USERS=0;
+    LAST_WEEK_USERS=0;
+    MAX_USERS=0;
 
     while IFS=, read -r DATE USERS SERVERS POSTS; do
         test "$DATE" -gt "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;

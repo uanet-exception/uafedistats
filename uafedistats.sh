@@ -145,7 +145,7 @@ function main() {
             post $@;
         ;;
         *)
-            echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Unknown '$subcommand' command" 1>&2;
+            echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Unknown '$COMMAND' command" 1>&2;
             usage;
             return 1;
         ;;

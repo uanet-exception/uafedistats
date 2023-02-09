@@ -119,10 +119,10 @@ function post() {
     POST_JSON=$(curl -H "Authorization: Bearer $AUTH_TOKEN" \
         "https://$API_HOST/api/v1/statuses" \
         -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 \
-        -F "status=$MAX_USERS accounts
-             +$((MAX_USERS - LAST_HOUR_USERS)) in the last hour
-             +$((MAX_USERS - LAST_DAY_USERS)) in the last day
-             +$((MAX_USERS - LAST_WEEK_USERS)) in the last week" \
+        -F "status=$MAX_USERS акаунтів
++$((MAX_USERS - LAST_HOUR_USERS)) за останню годину
++$((MAX_USERS - LAST_DAY_USERS)) за останній день
++$((MAX_USERS - LAST_WEEK_USERS)) за останній тиждень" \
         -F "media_ids[]=$MEDIA_ID"; true);
     POST_URL="$(echo $POST_JSON | jq -r .url 2>/dev/null; true)";
     test -n "$POST_URL" || {

@@ -87,15 +87,15 @@ function post() {
 
     while IFS=, read -r DATE USERS SERVERS POSTS; do
         test "$DATE" -gt "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;
-        test "$DATE" -gt "$ONE_DAY_AGO" && LAST_DAY_USERS=$USERS;
-        test "$DATE" -gt "$ONE_WEEK_AGO" && LAST_WEEK_USERS=$USERS;
+        test "$DATE" -gt "$ONE_DAY_AGO" && test "$USERS" -lt "$LAST_HOUR_USERS" && LAST_DAY_USERS=$USERS;
+        test "$DATE" -gt "$ONE_WEEK_AGO" && test "$USERS" -lt "$LAST_DAY_USERS" && LAST_WEEK_USERS=$USERS;
         test "$USERS" -gt "$MAX_USERS" && MAX_USERS=$USERS;
     done < <(tac "$DIR/workspace/mastostats.csv");
 
     # Normalize stats if no recent data
     test "$LAST_HOUR_USERS" -eq 0 && LAST_HOUR_USERS=$MAX_USERS;
-    test "$LAST_DAY_USERS" -eq 0 && LAST_DAY_USERS=$MAX_USERS;
-    test "$LAST_WEEK_USERS" -eq 0 && LAST_WEEK_USERS=$MAX_USERS;
+    test "$LAST_DAY_USERS" -eq 0 && LAST_DAY_USERS=$LAST_HOUR_USERS;
+    test "$LAST_WEEK_USERS" -eq 0 && LAST_WEEK_USERS=$LAST_HOUR_USERS;
 
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] $MAX_USERS accounts" 2>&1;
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] +$((MAX_USERS - LAST_HOUR_USERS)) in the last hour" 2>&1;

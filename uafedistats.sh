@@ -103,7 +103,7 @@ function post() {
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] +$((MAX_USERS - LAST_WEEK_USERS)) in the last week" 2>&1;
 
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] executing generate.gnuplot:";
-    gnuplot "$DIR/generate.gnuplot" 1>&2;
+    cd "$DIR" && gnuplot "$DIR/generate.gnuplot" 1>&2;
 
     MEDIA_JSON=$(curl -H "Authorization: Bearer $AUTH_TOKEN" -X POST \
         -H "Content-Type: multipart/form-data" \

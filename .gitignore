@@ -2,3 +2,4 @@ workspace/*.csv
 workspace/*.png
 workspace/*.log
 *.log
+main.cfg

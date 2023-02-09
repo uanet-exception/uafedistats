@@ -34,6 +34,10 @@ plot "workspace/mastostats.csv" using 1:2
 #usercountlow = 0
 usercountlow = GPVAL_DATA_Y_MIN - (GPVAL_DATA_Y_MAX - GPVAL_DATA_Y_MIN)
 usercounthigh = GPVAL_DATA_Y_MAX
+if (usercounthigh == usercountlow) {
+    # Normalize Y axes if the data for graph #2 is constant
+    usercounthigh = usercounthigh + 10
+}
 
 f(x) = uc_mean
 fit f(x) "workspace/mastostats.csv" using ($1):(d($2)) via uc_mean
@@ -99,9 +103,6 @@ set key textcolor rgb "white"
 # Draw tics after the other elements, so they're not overlapped
 set tics front
 
-# Set layout into multiplot mode (2 rows by 1 column = 2 plots)
-set multiplot layout 2, 1
-
 # Make sure we don't draw tics on the opposite side of the graph
 set xtics nomirror
 set ytics nomirror
@@ -145,13 +146,10 @@ set xdata time
 set locale 'uk_UA.UTF-8'
 set xrange [start_time:]
 set timefmt "%s"
+set format x "%a\n%d %b"
 set xlabel ""
 set autoscale xfix
-
-# Make the tics invisible, but continue to show the grid
-set tics scale 0
 set xtics tic_width
-set format x ""
 
 
 # Overall graph style
@@ -162,43 +160,3 @@ set grid
 plot "workspace/mastostats.csv" every ::1 using 1:2 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#2e85ad", \
         '' u ($1):(d_smooth($2, uc_extreme)) w filledcurves x1 title '' axes x1y2 fs transparent solid 0.5 noborder lc rgb "#7ae9d8"
 
-
-
-###############################################################################
-# GRAPH 2
-# Number of instances
-###############################################################################
-
-# Set bottom graph margins
-set tmargin cmarg
-set bmargin bmarg
-set lmargin lmarg
-set rmargin rmarg
-
-# Set Y axis
-set yrange [instanceslow-(instanceshigh-instanceslow):instanceshigh]
-set ylabel "Активних інстансів" textcolor rgb "#E9967A" offset 1,0,0
-
-# Set Y2 axis
-set y2range [0:tc_derivative_high * 1.2/1e3]
-set y2label 'Тисяча постів за годину' textcolor rgb "#EEE8AA"
-set format y2 "%'.0f"
-
-# Set X axis
-set xdata time 
-set xrange [start_time:]
-set timefmt "%s"
-set format x "%a\n%d %b"
-set xtics tic_width
-
-# Overall graph style
-set style line 12 lc rgb "#FEFEFE" lt 1 lw 5
-set grid
-
-# Plot the graph
-plot "workspace/mastostats.csv" every ::1 using 1:3 w filledcurves x1 title '' fs transparent solid 0.7 lc rgb "#E9967A", \
-        '' u ($1):(d_smooth($4, tc_extreme)/1e3) w filledcurves x1 title '' axes x1y2 fs transparent solid 0.5 noborder lc rgb "#EEE8AA"
-
-
-# I think this needs to be here for some reason
-unset multiplot

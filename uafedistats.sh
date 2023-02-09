@@ -34,8 +34,13 @@ function usage() {
 
 function update() {
     SERVERS=(
-        $(curl -s -f --retry 5 --connect-timeout 8 -m 10 https://relay.social.net.ua/nodeinfo/2.1.json | jq -r .metadata.peers[])
+        $(curl -s -f --retry 5 --connect-timeout 8 -m 10 https://relay.social.net.ua/nodeinfo/2.1.json | jq -r .metadata.peers[] 2>/dev/null; true)
     );
+
+    test "${#SERVERS[@]}" -gt 0 || {
+       echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Can't fetch the list of servers" 1>&2;
+       return 1;
+    }
 
     TOTAL_USERS=0;
     LOCAL_POSTS=0;
@@ -45,7 +50,7 @@ function update() {
             echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [WARNING] Can't get nodeinfo url from $SERVER" 1>&2;
             continue;
         };
-        NODEINFO=$(curl -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 "$NODEINFO_URL");
+        NODEINFO=$(curl -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 "$NODEINFO_URL"; true);
         test -n "$NODEINFO" || {
             echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [WARNING] Can't get nodeinfo from $SERVER" 1>&2;
             continue;
@@ -103,7 +108,7 @@ function post() {
     MEDIA_JSON=$(curl -H "Authorization: Bearer $AUTH_TOKEN" -X POST \
         -H "Content-Type: multipart/form-data" \
         -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 \
-        "https://$API_HOST/api/v1/media" --form file="@$DIR/workspace/graph.png");
+        "https://$API_HOST/api/v1/media" --form file="@$DIR/workspace/graph.png"; true);
 
     MEDIA_ID=$(echo $MEDIA_JSON | jq -r '.id' 2>/dev/null; true)
     test -n $MEDIA_ID || {
@@ -118,8 +123,8 @@ function post() {
              +$((MAX_USERS - LAST_HOUR_USERS)) in the last hour
              +$((MAX_USERS - LAST_DAY_USERS)) in the last day
              +$((MAX_USERS - LAST_WEEK_USERS)) in the last week" \
-        -F "media_ids[]=$MEDIA_ID");
-    POST_URL="$(echo $POST_JSON | jq -r .url 2>/dev/null)";
+        -F "media_ids[]=$MEDIA_ID"; true);
+    POST_URL="$(echo $POST_JSON | jq -r .url 2>/dev/null; true)";
     test -n "$POST_URL" || {
         echo -e "[$(date -u +"%d-%m-%Y %H:%M:%S")] [ERROR] Can't post status\n$POST_JSON" 1>&2;
         return 1;

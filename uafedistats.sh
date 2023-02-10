@@ -42,8 +42,9 @@ function update() {
        return 1;
     }
 
-    TOTAL_USERS=0;
-    LOCAL_POSTS=0;
+    declare -i SERVERS_ACTIVE=0;
+    declare -i TOTAL_USERS=0;
+    declare -i LOCAL_POSTS=0;
     for SERVER in ${SERVERS[@]}; do
         NODEINFO_URL=$(curl -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 "https://$SERVER/.well-known/nodeinfo" | jq -r .links[-1].href 2>/dev/null; true);
         test -n "$NODEINFO_URL" || {
@@ -55,11 +56,12 @@ function update() {
             echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [WARNING] Can't get nodeinfo from $SERVER" 1>&2;
             continue;
         };
+        let SERVERS_ACTIVE+=1;
         let TOTAL_USERS+=$(echo $NODEINFO | jq -r '.usage.users.total // 0');
         let LOCAL_POSTS+=$(echo $NODEINFO | jq -r '.usage.localPosts // 0');
     done
 
-    echo "$(date +%s),$TOTAL_USERS,${#SERVERS[@]},$LOCAL_POSTS" >> "$DIR/workspace/mastostats.csv";
+    echo "$(date +%s),$TOTAL_USERS,$SERVERS_ACTIVE,$LOCAL_POSTS" >> "$DIR/workspace/mastostats.csv";
 
     TMP="$(mktemp)";
     tail -n ${HISTSIZE:-10000} "$DIR/workspace/mastostats.csv" > "$TMP";
@@ -78,14 +80,14 @@ function post() {
     }
 
     # Collect stats first
-    ONE_HOUR_AGO=$(date -d "1 hour ago" +%s);
-    ONE_DAY_AGO=$(date -d "1 day ago" +%s);
-    ONE_WEEK_AGO=$(date -d "1 week ago" +%s);
+    declare -i ONE_HOUR_AGO=$(date -d "1 hour ago" +%s);
+    declare -i ONE_DAY_AGO=$(date -d "1 day ago" +%s);
+    declare -i ONE_WEEK_AGO=$(date -d "1 week ago" +%s);
 
-    LAST_HOUR_USERS=0;
-    LAST_DAY_USERS=0;
-    LAST_WEEK_USERS=0;
-    MAX_USERS=0;
+    declare -i LAST_HOUR_USERS=0;
+    declare -i LAST_DAY_USERS=0;
+    declare -i LAST_WEEK_USERS=0;
+    declare -i MAX_USERS=0;
 
     while IFS=, read -r DATE USERS SERVERS POSTS; do
         test "$DATE" -gt "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;

@@ -1,5 +1,6 @@
 workspace/*.csv
 workspace/*.png
 workspace/*.log
+workspace/cache.db
 *.log
 main.cfg

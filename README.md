@@ -6,7 +6,9 @@
 
 * `bash`
 * `jq`
+* `sed`
 * `curl`
+* `grep`
 * `coreutils`
 * `gnuplot`
 

@@ -137,7 +137,6 @@ function post() {
         echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] No new users for the past hour, exiting..." 2>&1;
         return 0;
     }
-    exit;
 
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] executing generate.gnuplot:";
     cd "$DIR" && gnuplot "$DIR/generate.gnuplot" 1>&2;

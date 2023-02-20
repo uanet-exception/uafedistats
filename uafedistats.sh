@@ -117,21 +117,26 @@ function post() {
     declare -i MAX_USERS=0;
 
     while IFS=, read -r DATE USERS SERVERS POSTS; do
-        test "$DATE" -gt "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;
-        test "$DATE" -gt "$ONE_DAY_AGO" && test "$USERS" -lt "$LAST_HOUR_USERS" && LAST_DAY_USERS=$USERS;
-        test "$DATE" -gt "$ONE_WEEK_AGO" && test "$USERS" -lt "$LAST_DAY_USERS" && LAST_WEEK_USERS=$USERS;
+        test "$DATE" -ge "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;
+        test "$DATE" -ge "$ONE_DAY_AGO" && test "$USERS" -lt "$LAST_HOUR_USERS" && LAST_DAY_USERS=$USERS;
+        test "$DATE" -ge "$ONE_WEEK_AGO" && test "$USERS" -lt "$LAST_DAY_USERS" && LAST_WEEK_USERS=$USERS;
         test "$MAX_USERS" -eq 0 && MAX_USERS=$USERS;
     done < <(tac "$DIR/workspace/mastostats.csv");
 
     # Normalize stats if no recent data
     test "$LAST_HOUR_USERS" -eq 0 && LAST_HOUR_USERS=$MAX_USERS;
+    DIFF_LAST_HOUR=$(echo $((MAX_USERS - LAST_HOUR_USERS)) | sed 's/^\([0-9]*\)$/+\1/;s/^+0$/0/');
+
     test "$LAST_DAY_USERS" -eq 0 && LAST_DAY_USERS=$LAST_HOUR_USERS;
+    DIFF_LAST_DAY=$(echo $((MAX_USERS - LAST_DAY_USERS)) | sed 's/^\([0-9]*\)$/+\1/;s/^+0$/0/');
+
     test "$LAST_WEEK_USERS" -eq 0 && LAST_WEEK_USERS=$LAST_HOUR_USERS;
+    DIFF_LAST_WEEK=$(echo $((MAX_USERS - LAST_WEEK_USERS)) | sed 's/^\([0-9]*\)$/+\1/;s/^+0$/0/');
 
     echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] $MAX_USERS accounts" 2>&1;
-    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] +$((MAX_USERS - LAST_HOUR_USERS)) in the last hour" 2>&1;
-    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] +$((MAX_USERS - LAST_DAY_USERS)) in the last day" 2>&1;
-    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] +$((MAX_USERS - LAST_WEEK_USERS)) in the last week" 2>&1;
+    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] $DIFF_LAST_HOUR in the last hour" 2>&1;
+    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] $DIFF_LAST_DAY in the last day" 2>&1;
+    echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] $DIFF_LAST_WEEK in the last week" 2>&1;
 
     test "$(($MAX_USERS - $LAST_HOUR_USERS))" -eq 0 && {
         echo "[$(date -u +"%d-%m-%Y %H:%M:%S")] [INFO] No new users for the past hour, exiting..." 2>&1;
@@ -156,9 +161,9 @@ function post() {
         "https://$API_HOST/api/v1/statuses" \
         -s -f --retry-delay 2 --retry 5 --connect-timeout 8 -m 10 \
         -F "status=$MAX_USERS акаунтів
-+$((MAX_USERS - LAST_HOUR_USERS)) за останню годину
-+$((MAX_USERS - LAST_DAY_USERS)) за останній день
-+$((MAX_USERS - LAST_WEEK_USERS)) за останній тиждень" \
+$DIFF_LAST_HOUR за останню годину
+$DIFF_LAST_DAY за останній день
+$DIFF_LAST_WEEK за останній тиждень" \
         -F "media_ids[]=$MEDIA_ID"; true);
     POST_URL="$(echo $POST_JSON | jq -r .url 2>/dev/null; true)";
     test -n "$POST_URL" || {

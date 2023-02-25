@@ -118,8 +118,8 @@ function post() {
 
     while IFS=, read -r DATE USERS SERVERS POSTS; do
         test "$DATE" -ge "$ONE_HOUR_AGO" && LAST_HOUR_USERS=$USERS;
-        test "$DATE" -ge "$ONE_DAY_AGO" && test "$USERS" -lt "$LAST_HOUR_USERS" && LAST_DAY_USERS=$USERS;
-        test "$DATE" -ge "$ONE_WEEK_AGO" && test "$USERS" -lt "$LAST_DAY_USERS" && LAST_WEEK_USERS=$USERS;
+        test "$DATE" -ge "$ONE_DAY_AGO" && test "$USERS" -le "$LAST_HOUR_USERS" && LAST_DAY_USERS=$USERS;
+        test "$DATE" -ge "$ONE_WEEK_AGO" && test "$USERS" -le "$LAST_DAY_USERS" && LAST_WEEK_USERS=$USERS;
         test "$MAX_USERS" -eq 0 && MAX_USERS=$USERS;
     done < <(tac "$DIR/workspace/mastostats.csv");
 
